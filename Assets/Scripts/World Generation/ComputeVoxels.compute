@@ -1,0 +1,220 @@
+#include "noiseSimplex.cginc"
+
+#pragma kernel Voxels
+#pragma kernel Mesh
+
+// Represents a face as four vertices
+struct Face {
+    float3 a;
+    float3 b;
+    float3 c;
+    float3 d;
+    int f;
+};
+
+// Buffer that stores voxels
+RWStructuredBuffer<int> V;
+// Buffer that stores mesh data (a list of faces)
+AppendStructuredBuffer<Face> M;
+
+// Noise parameters
+float frequency;
+int octaves;
+float lacunarity;
+float threshold;
+uint amplitude;
+int midLevel;
+
+// Chunk information
+int xCoordinate;
+int yCoordinate;
+int zCoordinate;
+uint resolution;
+uint chunkWidth;
+
+#define STONE 1
+#define GRASS 2
+#define DIRT 3
+#define SAND 4
+#define LEAVES 5
+#define WOOD 6
+#define TREE -1
+
+// Converts 3D index to 1D index
+uint GetVoxelIndex(uint x, uint y, uint z) {
+    uint padded = chunkWidth + 2;
+    uint index = padded * padded * z + padded * y + x;
+    return index;
+}
+
+// Gets voxel at 3D index
+uint GetVoxel(uint x, uint y, uint z) {
+    return V[GetVoxelIndex(x, y, z)];
+}
+
+float Lerp(float v0, float v1, float t) {
+    return (1 - t) * v0 + t * v1;
+}
+
+float random (float2 uv) {
+    return frac(sin(dot(uv,float2(12.9898,78.233)))*43758.5453123);
+}
+
+float Mountain(float x, float y, float z) {
+    float mountains = 0;
+    for (int j = 0; j < octaves; ++j) {
+        int multiplier = pow(abs(lacunarity), j);
+        mountains += snoise(float3(x * frequency * multiplier * 2, 
+                                y * frequency * multiplier * 3, 
+                                z * frequency * multiplier * 2)) / multiplier;
+    }
+    mountains = mountains * amplitude * 3 + midLevel;
+    return mountains * 2 - 16;
+}
+
+int GetNoise(float x, float y, float z) {
+    float biome = 0;
+
+    float base = 0;
+    for (int i = 0; i < octaves; ++i) {
+        int multiplier = pow(abs(lacunarity), i);
+        base += snoise(float3(x * frequency * multiplier, 
+                            y * frequency * multiplier, 
+                            z * frequency * multiplier)) / multiplier;
+    }
+    base = base * amplitude + midLevel;
+
+    float mountains = Mountain(x, y, z);
+
+    int value = 0;
+    if (y > base) {
+        if (y < mountains) {
+            if (y < Mountain(x, y + 20, z)) {
+                value = STONE;
+            } else if (y < Mountain(x, y + 3, z)) {
+                value = DIRT;
+            } else {
+                value = GRASS;
+            }
+        } else if (y > Mountain(x, y + 20, z) && y < Mountain(x, y - 1, z)) {
+            value = 0;
+            if ((int)(snoise(float3(x, y, z)) * 100) > 91) {
+                value = TREE;
+            }
+        }
+    } else {
+        if (y > 4) {
+            value = DIRT;
+        } else {
+            value = SAND;
+        }
+    }
+
+    return value;
+}
+
+[numthreads(4,4,4)]
+void Voxels(uint3 id : SV_DispatchThreadID) {
+    uint padded = chunkWidth + 2;
+    if (id.x < padded && id.y < padded && id.z < padded) {
+        // Map 3D indices to 1D index
+        uint index = padded * padded * id.z + padded * id.y + id.x;
+
+        // Width of chunk in world space
+        float globalWidth = (float)(chunkWidth / resolution);
+        
+        // Position of voxel in chunk space
+        float posX = ((float)id.x - 1.0) / resolution;
+        float posY = ((float)id.y - 1.0) / resolution;
+        float posZ = ((float)id.z - 1.0) / resolution;
+
+        // Position of voxel in world space
+        float globalPosX = posX + xCoordinate * globalWidth;
+        float globalPosY = posY + yCoordinate * globalWidth;
+        float globalPosZ = posZ + zCoordinate * globalWidth;
+
+        // Assigns voxel value to buffer
+        V[index] = GetNoise(globalPosX, globalPosY, globalPosZ);
+    }
+}
+
+[numthreads(4,4,4)]
+void Mesh(uint3 id : SV_DispatchThreadID) {
+    // Shift indices
+    uint x = id.x + 1;
+    uint y = id.y + 1;
+    uint z = id.z + 1;
+
+    // Only add faces if the voxel is filled
+    if (GetVoxel(x, y, z) != 0) {
+        // Position of voxel in chunk space
+        float posX = (float)id.x / (float)resolution;
+        float posY = (float)id.y / (float)resolution;
+        float posZ = (float)id.z / (float)resolution;
+
+        // Width of a voxel in world space
+        float fraction = 1.0 / (float)resolution;
+        uint i = GetVoxel(x, y, z);
+
+        // Front
+        if (GetVoxel(x, y, z - 1) == 0) {
+            Face face;
+            face.a = float3(posX, posY, posZ);
+            face.b = float3(posX, posY + fraction, posZ);
+            face.c = float3(posX + fraction, posY + fraction, posZ);
+            face.d = float3(posX + fraction, posY, posZ);
+            face.f = i;
+            M.Append(face);
+        }
+        // Right
+        if (GetVoxel(x + 1, y, z) == 0) {
+            Face face;
+            face.a = float3(posX + fraction, posY, posZ);
+            face.b = float3(posX + fraction, posY + fraction, posZ);
+            face.c = float3(posX + fraction, posY + fraction, posZ + fraction);
+            face.d = float3(posX + fraction, posY, posZ + fraction);
+            face.f = i;
+            M.Append(face);
+        }
+        // Back
+        if (GetVoxel(x, y, z + 1) == 0) {
+            Face face;
+            face.a = float3(posX + fraction, posY, posZ + fraction);
+            face.b = float3(posX + fraction, posY + fraction, posZ + fraction);
+            face.c = float3(posX, posY + fraction, posZ + fraction);
+            face.d = float3(posX, posY, posZ + fraction);
+            face.f = i;
+            M.Append(face);
+        }
+        // Left
+        if (GetVoxel(x - 1, y, z) == 0) {
+            Face face;
+            face.a = float3(posX, posY, posZ + fraction);
+            face.b = float3(posX, posY + fraction, posZ + fraction);
+            face.c = float3(posX, posY + fraction, posZ);
+            face.d = float3(posX, posY, posZ);
+            face.f = i;
+            M.Append(face);
+        }
+        // Up
+        if ((GetVoxel(x, y + 1, z) == 0)) {
+            Face face;
+            face.a = float3(posX, posY + fraction, posZ);
+            face.b = float3(posX, posY + fraction, posZ + fraction);
+            face.c = float3(posX + fraction, posY + fraction, posZ + fraction);
+            face.d = float3(posX + fraction, posY + fraction, posZ);
+            face.f = i;
+            M.Append(face);
+        }
+        // Down
+        if ((GetVoxel(x, y - 1, z) == 0)) {
+            Face face;
+            face.a = float3(posX, posY, posZ + fraction);
+            face.b = float3(posX, posY, posZ);
+            face.c = float3(posX + fraction, posY, posZ);
+            face.d = float3(posX + fraction, posY, posZ + fraction);
+            face.f = i;
+            M.Append(face);
+        }
+    }
+}

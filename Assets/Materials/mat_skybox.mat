@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8270412794265269665
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639247ca83abc874e893eb93af2b5e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 0
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: mat_skybox
+  m_Shader: {fileID: -6465566751694194690, guid: 8b0ab43317359da49b34f75360f6ed48, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - Clouds_Cutoff: -0.33
+    - Clouds_Edge: 0.75
+    - Clouds_Fractal_Amplitude: 0.7
+    - Clouds_Fractal_Frequency: 1.5
+    - Clouds_Octaves: 7
+    - Clouds_Opacity: 2
+    - Clouds_Scale: 0.7
+    - Clouds_Speed: 0.03
+    - Power: 14
+    - Star_Density: 10
+    - Sun_Brightness: 20
+    - Sun_Size: 0.02
+    - _BUILTIN_QueueControl: 0
+    - _BUILTIN_QueueOffset: 0
+    - _Clouds_Power: 0.9
+    m_Colors:
+    - Ground: {r: 0.4627451, g: 0.38135642, b: 0.2822745, a: 1}
+    - Horizon: {r: 0.88699996, g: 0.9569524, b: 1, a: 1}
+    - Sky: {r: 0.34905604, g: 0.50498974, b: 0.864, a: 1}
+    - Sun_Mask_Offset: {r: 0, g: -0.02, b: 0.04, a: 0}
+    - _SunDirection: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []
