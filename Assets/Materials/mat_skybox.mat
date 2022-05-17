@@ -51,21 +51,24 @@ Material:
     - Clouds_Edge: 0.75
     - Clouds_Fractal_Amplitude: 0.7
     - Clouds_Fractal_Frequency: 1.5
-    - Clouds_Octaves: 7
-    - Clouds_Opacity: 2
-    - Clouds_Scale: 0.7
+    - Clouds_Octaves: 8
+    - Clouds_Opacity: 1
+    - Clouds_Scale: 0.5
     - Clouds_Speed: 0.03
-    - Power: 14
+    - Power: 5
     - Star_Density: 10
     - Sun_Brightness: 20
     - Sun_Size: 0.02
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
     - _Clouds_Power: 0.9
+    - _Sun_Gradient_Brightness: 0.2
+    - _Sun_Gradient_Power: 8.39
     m_Colors:
-    - Ground: {r: 0.4627451, g: 0.38135642, b: 0.2822745, a: 1}
-    - Horizon: {r: 0.88699996, g: 0.9569524, b: 1, a: 1}
-    - Sky: {r: 0.34905604, g: 0.50498974, b: 0.864, a: 1}
+    - Ground: {r: 0.5647059, g: 0.6431373, b: 0.7176471, a: 1}
+    - Horizon: {r: 0.56349194, g: 0.6448296, b: 0.71599996, a: 1}
+    - Sky: {r: 0.27058825, g: 0.3816994, b: 0.6039216, a: 1}
     - Sun_Mask_Offset: {r: 0, g: -0.02, b: 0.04, a: 0}
     - _SunDirection: {r: 0, g: 0, b: 0, a: 0}
+    - _Sun_Gradient_Remap: {r: 0.6, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []

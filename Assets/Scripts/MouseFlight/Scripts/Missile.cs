@@ -9,11 +9,21 @@ public class Missile : MonoBehaviour {
     public float _rotateSpeed = 95;
     public LayerMask collisionLayer;
     public Transform meshes;
+    public GameObject yellow;
+    public GameObject blue;
+    private bool destroy;
 
-    public void Init(World world, AimPosition aimPosition) {
+    public void Init(World world, AimPosition aimPosition, bool destroy) {
         _rb = GetComponent<Rigidbody>();
         this.world = world;
         this.aimPosition = aimPosition;
+        this.destroy = destroy;
+
+        if (destroy) {
+            blue.SetActive(false);
+        } else {
+            yellow.SetActive(false);
+        }
     }
 
     private void FixedUpdate() {
@@ -35,7 +45,10 @@ public class Missile : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-        world.Build(transform.position, 0);
+        if (destroy)
+            world.Build(transform.position, 0);
+        else
+            world.Build(transform.position, 3);
         Destroy(gameObject);
     }
 }

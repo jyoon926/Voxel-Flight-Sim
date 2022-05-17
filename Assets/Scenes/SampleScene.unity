@@ -15,15 +15,15 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0.8862745, g: 0.95686275, b: 1, a: 1}
+  m_FogColor: {r: 0.5647059, g: 0.6431373, b: 0.7176471, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.0013
-  m_LinearFogStart: 0
-  m_LinearFogEnd: 200
+  m_FogDensity: 0.0025
+  m_LinearFogStart: 50
+  m_LinearFogEnd: 500
   m_AmbientSkyColor: {r: 0.3755316, g: 0.3755316, b: 0.3755316, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 0.4
+  m_AmbientIntensity: 0.8
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 2100000, guid: 63789726c82fcaf4db21a0fae36e0260, type: 2}
@@ -422,7 +422,7 @@ Light:
     m_Type: 2
     m_Resolution: 2
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.95
     m_Bias: 0.5
     m_NormalBias: 0
     m_NearPlane: 0.1
@@ -458,7 +458,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.02e-43, y: 0, z: 0, w: 9.636369e+20}
+  m_BoundingSphereOverride: {x: 3.6e-44, y: 1.24012e-40, z: 1.02e-43, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -648,7 +648,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4614794542237088, guid: 1ffc29c315992624cb793d6cbf2c4ac1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 4614794542237088, guid: 1ffc29c315992624cb793d6cbf2c4ac1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1036,7 +1036,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4563113176137864, guid: 76845026de374da4aa455cd164e63143, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 4563113176137864, guid: 76845026de374da4aa455cd164e63143, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1249,7 +1249,7 @@ PrefabInstance:
       objectReference: {fileID: 839740197}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: octaves
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: material
@@ -1257,11 +1257,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: d63d3d241e1bfb145a6f85c529733286, type: 2}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: midLevel
-      value: 26
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: amplitude
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: explosion
@@ -1277,7 +1277,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: lacunarity
-      value: 2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: resolution
@@ -1301,7 +1301,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: meshDrawsPerFrame
-      value: 4
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
+      propertyPath: chunkHeightBounds.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
+      propertyPath: chunkHeightBounds.y
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: blocks.Array.data[0]
@@ -1333,7 +1341,7 @@ PrefabInstance:
       objectReference: {fileID: 120044020312825293, guid: faa26ef2534bb7b4b8fa57757a23b716, type: 3}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: chunkUpdatesPerFrame
-      value: 8
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: colors.Array.data[0].a
@@ -1448,6 +1456,10 @@ PrefabInstance:
       propertyPath: m_ClearFlags
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7123659298131164839, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
+      propertyPath: field of view
+      value: 70
+      objectReference: {fileID: 0}
     - target: {fileID: 7123659298131164842, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
       propertyPath: sun
       value: 
@@ -1456,6 +1468,10 @@ PrefabInstance:
       propertyPath: sun
       value: 
       objectReference: {fileID: 705507994}
+    - target: {fileID: 7123659298131164843, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7123659298131164845, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
       propertyPath: _light
       value: 

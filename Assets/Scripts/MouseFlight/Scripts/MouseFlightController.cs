@@ -197,7 +197,11 @@ namespace MFlight
         private void ShootMissiles() {
             if (Input.GetMouseButtonDown(0) && timeStamp <= Time.time) {
                 Missile newMissile = Instantiate(missile, missileSpawn.position, plane.transform.rotation).GetComponent<Missile>();
-                newMissile.Init(world, aimPosition);
+                newMissile.Init(world, aimPosition, true);
+                timeStamp = Time.time + missileCoolDown;
+            } else if (Input.GetMouseButtonDown(1) && timeStamp <= Time.time) {
+                Missile newMissile = Instantiate(missile, missileSpawn.position, plane.transform.rotation).GetComponent<Missile>();
+                newMissile.Init(world, aimPosition, false);
                 timeStamp = Time.time + missileCoolDown;
             }
         }

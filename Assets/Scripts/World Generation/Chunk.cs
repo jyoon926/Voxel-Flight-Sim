@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Jobs;
 
 public class Chunk : MonoBehaviour
 {
@@ -69,6 +70,7 @@ public class Chunk : MonoBehaviour
     public void GenerateMesh() {
         GetMesh();
         UpdateMesh();
+        // GetComponent<Animator>().SetTrigger("Appear");
     }
 
     // Gets vertices data using compute shader on the CPU
@@ -151,7 +153,7 @@ public class Chunk : MonoBehaviour
                     AddTriangles(i);
                     i++;
                 }
-            } else if (coordinates.y == 0 && y == 1) {
+            } else if (coordinates.y == world.GetChunkHeightBounds().x && y == 1) {
                 float posX = (float)(x - 1) / (float)resolution;
                 float posY = (float)(y - 1) / (float)resolution;
                 float posZ = (float)(z - 1) / (float)resolution;
@@ -249,41 +251,73 @@ public class Chunk : MonoBehaviour
         for (int z = 1; z < padded - 1; ++z) {
             int index = padded * padded * z + padded * y + x;
             // Trees
-            if (voxels[index] == -1) {
+            if (voxels[index] < 0) {
                 List<Quaternion> treeVoxels = new List<Quaternion>();
-                float random = UnityEngine.Random.Range(0.5f, 1f);
-                // Trunk
-                int height = Mathf.RoundToInt(random * 20 * resolution);
-                int radius = Mathf.RoundToInt(random * 6 * resolution);
-                for (int h = -2; h < height; ++h) {
-                    float r = 1.5f - (float)h / (float)height;
-                    r = r * resolution * 1.25f;
-                    int rad = Mathf.RoundToInt(r);
-                    for (int i = -rad; i <= rad; ++i) {
-                    for (int j = -rad; j <= rad; ++j) {
-                        if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad - 1)
-                            treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 6));
-                        else if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad) {
-                            int rand = UnityEngine.Random.Range(1, 16);
-                            if (rand > 1)
+                float random = UnityEngine.Random.Range(0.6f, 1f);
+                float randomFR = UnityEngine.Random.Range(0f, 1f);
+                if (voxels[index] == -1) {
+                    // DEFAULT TREE
+                    // Trunk
+                    int height = Mathf.RoundToInt(random * 20 * resolution);
+                    int radius = Mathf.RoundToInt(random * 6 * resolution);
+                    // for (int h = 0; h < height; ++h) {
+                    //     treeVoxels.Add(new Quaternion(x, y + h, z, 6));
+                    // }
+                    for (int h = -2; h < height; ++h) {
+                        float r = 1.3f - (float)h / (float)height;
+                        r = r * resolution;
+                        int rad = Mathf.RoundToInt(r);
+                        for (int i = -rad; i <= rad; ++i) {
+                        for (int j = -rad; j <= rad; ++j) {
+                            if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad - 1)
                                 treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 6));
+                            else if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad) {
+                                int rand = UnityEngine.Random.Range(1, 16);
+                                if (rand > 1)
+                                    treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 6));
+                            }
+                        }
+                        }
+                    }
+                    // Leaves
+                    for (int i = -radius; i <= radius; ++i) {
+                    for (int j = -radius; j <= radius / 1.5f; ++j) {
+                    for (int k = -radius; k <= radius; k++) {
+                        if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius - 1) {
+                            treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
+                        } else if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius) {
+                            int rand = UnityEngine.Random.Range(1, 3);
+                            if (rand > 1)
+                                treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
                         }
                     }
                     }
-                }
-                // Leaves
-                for (int i = -radius; i <= radius; ++i) {
-                for (int j = -radius; j <= radius / 1.5f; ++j) {
-                for (int k = -radius; k <= radius; k++) {
-                    if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius - 1) {
-                        treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
-                    } else if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius) {
-                        int rand = UnityEngine.Random.Range(1, 3);
-                        if (rand > 1)
-                            treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
                     }
-                }
-                }
+                } else if (voxels[index] == -2) {
+                    // SPRUCE TREE
+                    treeVoxels.Add(new Quaternion(x, y, z, 6));
+                    treeVoxels.Add(new Quaternion(x, y + 1, z, 6));
+                    int height = Mathf.RoundToInt(random * 14 * resolution);
+                    int radius = (int)(height / 3.5f);
+                    float rad = radius;
+                    for (int h = 2; h < height - 1; ++h) {
+                        for (int i = -radius; i <= radius; ++i) {
+                        for (int j = -radius; j <= radius; ++j) {
+                            if (Mathf.Sqrt(i*i + j*j) < rad) {
+                                treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 7));
+                            }
+                        }
+                        }
+                        rad -= radius * 0.08f;
+                    }
+                    treeVoxels.Add(new Quaternion(x, y + height - 1, z, 7));
+                    treeVoxels.Add(new Quaternion(x, y + height, z, 7));
+                } else if (voxels[index] == -3) {
+                    // VINE
+                    int height = Mathf.RoundToInt(randomFR * 6 * resolution);
+                    for (int h = 0; h < height; ++h) {
+                        treeVoxels.Add(new Quaternion(x, y - h, z, 2));
+                    }
                 }
                 // Fill voxel arrays
                 for (int vi = 0; vi < treeVoxels.Count; ++vi) {

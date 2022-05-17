@@ -10,6 +10,7 @@ public class World : MonoBehaviour {
         [SerializeField] private int chunkUpdatesPerFrame;
         [SerializeField] private int meshDrawsPerFrame;
         [SerializeField] private Transform viewer;
+        [SerializeField] private Vector2Int chunkHeightBounds;
 
     [Header("Noise Parameters")]
         [SerializeField] private ComputeShader voxelShader;
@@ -50,6 +51,7 @@ public class World : MonoBehaviour {
         noise = new FastNoiseLite();
         noise.SetNoiseType(FastNoiseLite.NoiseType.Value);
 
+        // Set compute shader values
         voxelShader.SetFloat("frequency", frequency);
         voxelShader.SetInt("octaves", octaves);
         voxelShader.SetFloat("lacunarity", lacunarity);
@@ -143,7 +145,7 @@ public class World : MonoBehaviour {
         for (int z = viewerCoordinates.z - viewDistanceInChunks; z < viewerCoordinates.z + viewDistanceInChunks; ++z) {
         Vector3Int chunk = new Vector3Int(x, 0, z);
         if (ChunkIsInView(chunk)) {
-            for (int y = 0; y < 6; ++y) {
+            for (int y = chunkHeightBounds.x; y <= chunkHeightBounds.y; ++y) {
                 UpdateChunk(new Vector3Int(x, y, z));
             }
         }
@@ -211,7 +213,8 @@ public class World : MonoBehaviour {
         if (chunks.ContainsKey(chunk)) {
             chunks[chunk].Build(voxelPosition, radius, material);
         }
-        StartCoroutine(Explosion(position));
+        if (material == 0)
+            StartCoroutine(Explosion(position));
     }
 
     IEnumerator Explosion(Vector3 position) {
@@ -249,6 +252,10 @@ public class World : MonoBehaviour {
 
     public int GetViewDistance() {
         return viewDistance;
+    }
+
+    public Vector2Int GetChunkHeightBounds() {
+        return chunkHeightBounds;
     }
 
     public ComputeShader GetVoxelShader() {

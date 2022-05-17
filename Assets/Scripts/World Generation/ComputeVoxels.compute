@@ -38,7 +38,9 @@ uint chunkWidth;
 #define SAND 4
 #define LEAVES 5
 #define WOOD 6
-#define TREE -1
+#define TREE_TALL -1
+#define TREE_SPRUCE -2
+#define VINE -3
 
 // Converts 3D index to 1D index
 uint GetVoxelIndex(uint x, uint y, uint z) {
@@ -68,7 +70,7 @@ float Mountain(float x, float y, float z) {
                                 y * frequency * multiplier * 3, 
                                 z * frequency * multiplier * 2)) / multiplier;
     }
-    mountains = mountains * amplitude * 3 + midLevel;
+    mountains = mountains * amplitude * 3 + midLevel + 16;
     return mountains * 2 - 16;
 }
 
@@ -99,11 +101,17 @@ int GetNoise(float x, float y, float z) {
         } else if (y > Mountain(x, y + 20, z) && y < Mountain(x, y - 1, z)) {
             value = 0;
             if ((int)(snoise(float3(x, y, z)) * 100) > 91) {
-                value = TREE;
+                value = TREE_TALL;
+            } else if ((int)(snoise(float3(x, y, z)) * 100) > 86) {
+                value = TREE_SPRUCE;
+            }
+        } else if (y < Mountain(x, y + 21, z) && y < Mountain(x, y + 1, z) && y < Mountain(x, y + 2, z)) {
+            if ((int)(snoise(float3(x, y, z)) * 100) > 70) {
+                value = VINE;
             }
         }
     } else {
-        if (y > 4) {
+        if (y > -8) {
             value = DIRT;
         } else {
             value = SAND;
