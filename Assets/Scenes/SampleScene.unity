@@ -458,7 +458,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 3.6e-44, y: 1.24012e-40, z: 1.02e-43, w: 0}
+  m_BoundingSphereOverride: {x: 1.02e-43, y: 3e-45, z: 0, w: 6e-45}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -760,7 +760,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1220903304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1301,7 +1301,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: meshDrawsPerFrame
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: chunkHeightBounds.x
@@ -1341,7 +1341,7 @@ PrefabInstance:
       objectReference: {fileID: 120044020312825293, guid: faa26ef2534bb7b4b8fa57757a23b716, type: 3}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: chunkUpdatesPerFrame
-      value: 4
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3947948230098484481, guid: 2e9850ac9424e33468c75c9466f3823a, type: 3}
       propertyPath: colors.Array.data[0].a
@@ -1453,6 +1453,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7123659298131164839, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7123659298131164839, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
       propertyPath: m_ClearFlags
       value: 1
       objectReference: {fileID: 0}
@@ -1469,8 +1473,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 705507994}
     - target: {fileID: 7123659298131164843, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
+      propertyPath: cones
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7123659298131164843, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7123659298131164843, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
+      propertyPath: coneTraceSteps
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7123659298131164845, guid: 5a49348f3e5791746be032a9aaa8bdf0, type: 3}
       propertyPath: _light

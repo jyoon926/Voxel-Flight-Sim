@@ -30,7 +30,7 @@ Material:
     - _BUILTIN_QueueOffset: 0
     - _Fuzziness: 1
     - _Range: 0
-    - _Smoothness: 0.15
+    - _Smoothness: 0.2
     m_Colors:
     - _Brightness_Range: {r: 1, g: 0.85, b: 0, a: 0}
     - _Hue_Offset_Range: {r: 1, g: 0.985, b: 0, a: 0}

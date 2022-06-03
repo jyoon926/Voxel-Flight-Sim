@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Jobs;
 
 public class Chunk : MonoBehaviour
 {
@@ -69,109 +68,111 @@ public class Chunk : MonoBehaviour
     // Generate mesh
     public void GenerateMesh() {
         GetMesh();
-        UpdateMesh();
-        // GetComponent<Animator>().SetTrigger("Appear");
     }
 
     // Gets vertices data using compute shader on the CPU
     private void GetMesh() {
-        int i = 0;
-        for (int x = 1; x < chunkWidth + 1; ++x) {
-        for (int y = 1; y < chunkWidth + 1; ++y) {
-        for (int z = 1; z < chunkWidth + 1; ++z) {
-            int id = voxels[GetIndex(x, y, z)];
-            if (id != 0) {
-                float posX = (float)(x - 1) / (float)resolution;
-                float posY = (float)(y - 1) / (float)resolution;
-                float posZ = (float)(z - 1) / (float)resolution;
-                float fraction = 1f / (float)resolution;
-                float rand = Mathf.Clamp(UnityEngine.Random.Range(0f, 1f), 0f, 1f);
-                Color color = new Color(rand, rand, rand, 1f);
-                // Front
-                if (voxels[GetIndex(x, y, z - 1)] == 0) {
-                    vertices.Add(new Vector3(posX, posY, posZ));
+        // await Task.Run(() => {
+            System.Random randomGen = new System.Random();
+            int i = 0;
+            for (int x = 1; x < chunkWidth + 1; ++x) {
+            for (int y = 1; y < chunkWidth + 1; ++y) {
+            for (int z = 1; z < chunkWidth + 1; ++z) {
+                int id = voxels[GetIndex(x, y, z)];
+                if (id != 0) {
+                    float posX = (float)(x - 1) / (float)resolution;
+                    float posY = (float)(y - 1) / (float)resolution;
+                    float posZ = (float)(z - 1) / (float)resolution;
+                    float fraction = 1f / (float)resolution;
+                    float rand = Mathf.Clamp((float)randomGen.NextDouble(), 0f, 1f);
+                    Color color = new Color(rand, rand, rand, 1f);
+                    // Front
+                    if (voxels[GetIndex(x, y, z - 1)] == 0) {
+                        vertices.Add(new Vector3(posX, posY, posZ));
+                        vertices.Add(new Vector3(posX, posY + fraction, posZ));
+                        vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ));
+                        vertices.Add(new Vector3(posX + fraction, posY, posZ));
+                        AddTextureToFace(id);
+                        // RandomizeColor(color);
+                        AddTriangles(i);
+                        i++;
+                    }
+                    // Right
+                    if (voxels[GetIndex(x + 1, y, z)] == 0) {
+                        vertices.Add(new Vector3(posX + fraction, posY, posZ));
+                        vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ));
+                        vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ + fraction));
+                        vertices.Add(new Vector3(posX + fraction, posY, posZ + fraction));
+                        AddTextureToFace(id);
+                        // RandomizeColor(color);
+                        AddTriangles(i);
+                        i++;
+                    }
+                    // Back
+                    if (voxels[GetIndex(x, y, z + 1)] == 0) {
+                        vertices.Add(new Vector3(posX + fraction, posY, posZ + fraction));
+                        vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ + fraction));
+                        vertices.Add(new Vector3(posX, posY + fraction, posZ + fraction));
+                        vertices.Add(new Vector3(posX, posY, posZ + fraction));
+                        AddTextureToFace(id);
+                        // RandomizeColor(color);
+                        AddTriangles(i);
+                        i++;
+                    }
+                    // Left
+                    if (voxels[GetIndex(x - 1, y, z)] == 0) {
+                        vertices.Add(new Vector3(posX, posY, posZ + fraction));
+                        vertices.Add(new Vector3(posX, posY + fraction, posZ + fraction));
+                        vertices.Add(new Vector3(posX, posY + fraction, posZ));
+                        vertices.Add(new Vector3(posX, posY, posZ));
+                        AddTextureToFace(id);
+                        // RandomizeColor(color);
+                        AddTriangles(i);
+                        i++;
+                    }
+                    // Up
+                    if ((voxels[GetIndex(x, y + 1, z)] == 0)) {
+                        vertices.Add(new Vector3(posX, posY + fraction, posZ));
+                        vertices.Add(new Vector3(posX, posY + fraction, posZ + fraction));
+                        vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ + fraction));
+                        vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ));
+                        AddTextureToFace(id);
+                        // RandomizeColor(color);
+                        AddTriangles(i);
+                        i++;
+                    }
+                    // Down
+                    if ((voxels[GetIndex(x, y - 1, z)] == 0)) {
+                        vertices.Add(new Vector3(posX, posY, posZ + fraction));
+                        vertices.Add(new Vector3(posX, posY, posZ));
+                        vertices.Add(new Vector3(posX + fraction, posY, posZ));
+                        vertices.Add(new Vector3(posX + fraction, posY, posZ + fraction));
+                        AddTextureToFace(id);
+                        // RandomizeColor(color);
+                        AddTriangles(i);
+                        i++;
+                    }
+                } else if (coordinates.y == world.GetChunkHeightBounds().x && y == 1) {
+                    float posX = (float)(x - 1) / (float)resolution;
+                    float posY = (float)(y - 1) / (float)resolution;
+                    float posZ = (float)(z - 1) / (float)resolution;
+                    float fraction = 1f / (float)resolution;
+                    // Up
                     vertices.Add(new Vector3(posX, posY + fraction, posZ));
-                    vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ));
-                    vertices.Add(new Vector3(posX + fraction, posY, posZ));
-                    AddTextureToFace(id);
-                    RandomizeColor(color);
-                    AddTriangles(i);
-                    i++;
-                }
-                // Right
-                if (voxels[GetIndex(x + 1, y, z)] == 0) {
-                    vertices.Add(new Vector3(posX + fraction, posY, posZ));
-                    vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ));
-                    vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ + fraction));
-                    vertices.Add(new Vector3(posX + fraction, posY, posZ + fraction));
-                    AddTextureToFace(id);
-                    RandomizeColor(color);
-                    AddTriangles(i);
-                    i++;
-                }
-                // Back
-                if (voxels[GetIndex(x, y, z + 1)] == 0) {
-                    vertices.Add(new Vector3(posX + fraction, posY, posZ + fraction));
-                    vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ + fraction));
-                    vertices.Add(new Vector3(posX, posY + fraction, posZ + fraction));
-                    vertices.Add(new Vector3(posX, posY, posZ + fraction));
-                    AddTextureToFace(id);
-                    RandomizeColor(color);
-                    AddTriangles(i);
-                    i++;
-                }
-                // Left
-                if (voxels[GetIndex(x - 1, y, z)] == 0) {
-                    vertices.Add(new Vector3(posX, posY, posZ + fraction));
-                    vertices.Add(new Vector3(posX, posY + fraction, posZ + fraction));
-                    vertices.Add(new Vector3(posX, posY + fraction, posZ));
-                    vertices.Add(new Vector3(posX, posY, posZ));
-                    AddTextureToFace(id);
-                    RandomizeColor(color);
-                    AddTriangles(i);
-                    i++;
-                }
-                // Up
-                if ((voxels[GetIndex(x, y + 1, z)] == 0)) {
-                    vertices.Add(new Vector3(posX, posY + fraction, posZ));
                     vertices.Add(new Vector3(posX, posY + fraction, posZ + fraction));
                     vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ + fraction));
                     vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ));
-                    AddTextureToFace(id);
-                    RandomizeColor(color);
+                    AddTextureToFace(17);
+                    // RandomizeColor(new Color(1f, 1f, 1f, 1f));
                     AddTriangles(i);
                     i++;
                 }
-                // Down
-                if ((voxels[GetIndex(x, y - 1, z)] == 0)) {
-                    vertices.Add(new Vector3(posX, posY, posZ + fraction));
-                    vertices.Add(new Vector3(posX, posY, posZ));
-                    vertices.Add(new Vector3(posX + fraction, posY, posZ));
-                    vertices.Add(new Vector3(posX + fraction, posY, posZ + fraction));
-                    AddTextureToFace(id);
-                    RandomizeColor(color);
-                    AddTriangles(i);
-                    i++;
-                }
-            } else if (coordinates.y == world.GetChunkHeightBounds().x && y == 1) {
-                float posX = (float)(x - 1) / (float)resolution;
-                float posY = (float)(y - 1) / (float)resolution;
-                float posZ = (float)(z - 1) / (float)resolution;
-                float fraction = 1f / (float)resolution;
-                // Up
-                vertices.Add(new Vector3(posX, posY + fraction, posZ));
-                vertices.Add(new Vector3(posX, posY + fraction, posZ + fraction));
-                vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ + fraction));
-                vertices.Add(new Vector3(posX + fraction, posY + fraction, posZ));
-                AddTextureToFace(17);
-                RandomizeColor(new Color(1f, 1f, 1f, 1f));
-                AddTriangles(i);
-                i++;
             }
-        }
-        }
-        }
-        pass = 3;
+            }
+            }
+            pass = 3;
+        // });
+        UpdateMesh();
     }
 
     private int GetIndex(int x, int y, int z) {
@@ -217,7 +218,7 @@ public class Chunk : MonoBehaviour
         mesh.uv = uvs.ToArray();
         mesh.colors = colors.ToArray();
         mesh.RecalculateNormals();
-        GetComponent<MeshCollider>().sharedMesh = mesh;
+        // GetComponent<MeshCollider>().sharedMesh = mesh;
 
         vertices.Clear();
         triangles.Clear();
@@ -244,110 +245,113 @@ public class Chunk : MonoBehaviour
 
     // 2nd Pass
     // Gets voxel data for structures
-    public void GetStructures() {
-        int padded = chunkWidth + 2;
-        for (int x = 1; x < padded - 1; ++x) {
-        for (int y = 1; y < padded - 1; ++y) {
-        for (int z = 1; z < padded - 1; ++z) {
-            int index = padded * padded * z + padded * y + x;
-            // Trees
-            if (voxels[index] < 0) {
-                List<Quaternion> treeVoxels = new List<Quaternion>();
-                float random = UnityEngine.Random.Range(0.6f, 1f);
-                float randomFR = UnityEngine.Random.Range(0f, 1f);
-                if (voxels[index] == -1) {
-                    // DEFAULT TREE
-                    // Trunk
-                    int height = Mathf.RoundToInt(random * 20 * resolution);
-                    int radius = Mathf.RoundToInt(random * 6 * resolution);
-                    // for (int h = 0; h < height; ++h) {
-                    //     treeVoxels.Add(new Quaternion(x, y + h, z, 6));
-                    // }
-                    for (int h = -2; h < height; ++h) {
-                        float r = 1.3f - (float)h / (float)height;
-                        r = r * resolution;
-                        int rad = Mathf.RoundToInt(r);
-                        for (int i = -rad; i <= rad; ++i) {
-                        for (int j = -rad; j <= rad; ++j) {
-                            if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad - 1)
-                                treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 6));
-                            else if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad) {
-                                int rand = UnityEngine.Random.Range(1, 16);
-                                if (rand > 1)
+    public async Task GetStructures() {
+        await Task.Run(() => {
+            System.Random randomGen = new System.Random();
+            int padded = chunkWidth + 2;
+            for (int x = 1; x < padded - 1; ++x) {
+            for (int y = 1; y < padded - 1; ++y) {
+            for (int z = 1; z < padded - 1; ++z) {
+                int index = padded * padded * z + padded * y + x;
+                // Trees
+                if (voxels[index] < 0) {
+                    List<Quaternion> treeVoxels = new List<Quaternion>();
+                    float random = (float)randomGen.NextDouble() * 0.4f + 0.6f;
+                    float randomFR = (float)randomGen.NextDouble();
+                    if (voxels[index] == -1) {
+                        // DEFAULT TREE
+                        // Trunk
+                        int height = Mathf.RoundToInt(random * 20 * resolution);
+                        int radius = Mathf.RoundToInt(random * 6 * resolution);
+                        // for (int h = 0; h < height; ++h) {
+                        //     treeVoxels.Add(new Quaternion(x, y + h, z, 6));
+                        // }
+                        for (int h = -2; h < height; ++h) {
+                            float r = 1.3f - (float)h / (float)height;
+                            r = r * resolution;
+                            int rad = Mathf.RoundToInt(r);
+                            for (int i = -rad; i <= rad; ++i) {
+                            for (int j = -rad; j <= rad; ++j) {
+                                if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad - 1)
                                     treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 6));
+                                else if (Vector2.Distance(Vector2.zero, new Vector2(i, j)) <= rad) {
+                                    int rand = randomGen.Next(1, 16);
+                                    if (rand > 1)
+                                        treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 6));
+                                }
+                            }
                             }
                         }
-                        }
-                    }
-                    // Leaves
-                    for (int i = -radius; i <= radius; ++i) {
-                    for (int j = -radius; j <= radius / 1.5f; ++j) {
-                    for (int k = -radius; k <= radius; k++) {
-                        if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius - 1) {
-                            treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
-                        } else if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius) {
-                            int rand = UnityEngine.Random.Range(1, 3);
-                            if (rand > 1)
-                                treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
-                        }
-                    }
-                    }
-                    }
-                } else if (voxels[index] == -2) {
-                    // SPRUCE TREE
-                    treeVoxels.Add(new Quaternion(x, y, z, 6));
-                    treeVoxels.Add(new Quaternion(x, y + 1, z, 6));
-                    int height = Mathf.RoundToInt(random * 14 * resolution);
-                    int radius = (int)(height / 3.5f);
-                    float rad = radius;
-                    for (int h = 2; h < height - 1; ++h) {
+                        // Leaves
                         for (int i = -radius; i <= radius; ++i) {
-                        for (int j = -radius; j <= radius; ++j) {
-                            if (Mathf.Sqrt(i*i + j*j) < rad) {
-                                treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 7));
+                        for (int j = -radius; j <= radius / 1.5f; ++j) {
+                        for (int k = -radius; k <= radius; k++) {
+                            if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius - 1) {
+                                treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
+                            } else if (Mathf.Sqrt(i*i + (j * 1.5f)*(j * 1.5f) + k*k) < radius) {
+                                int rand = randomGen.Next(1, 3);
+                                if (rand > 1)
+                                    treeVoxels.Add(new Quaternion(x + i, y + j + height, z + k, 5));
                             }
                         }
                         }
-                        rad -= radius * 0.08f;
-                    }
-                    treeVoxels.Add(new Quaternion(x, y + height - 1, z, 7));
-                    treeVoxels.Add(new Quaternion(x, y + height, z, 7));
-                } else if (voxels[index] == -3) {
-                    // VINE
-                    int height = Mathf.RoundToInt(randomFR * 6 * resolution);
-                    for (int h = 0; h < height; ++h) {
-                        treeVoxels.Add(new Quaternion(x, y - h, z, 2));
-                    }
-                }
-                // Fill voxel arrays
-                for (int vi = 0; vi < treeVoxels.Count; ++vi) {
-                    Quaternion v = treeVoxels[vi];
-                    int xx = (int)v.x;
-                    int yy = (int)v.y;
-                    int zz = (int)v.z;
-                    for (int a = -1; a <= 1; ++a) {
-                    for (int b = -1; b <= 1; ++b) {
-                    for (int c = -1; c <= 1; ++c) {
-                        int xxx = xx - (chunkWidth * a);
-                        int yyy = yy - (chunkWidth * b);
-                        int zzz = zz - (chunkWidth * c);
-                        if (xxx >= 0 && xxx < padded && yyy >= 0 && yyy < padded && zzz >= 0 && zzz < padded) {
-                            int i = padded * padded * zzz + padded * yyy + xxx;
-                            Vector3Int chunk = coordinates + new Vector3Int(a, b, c);
-                            // Debug.Log("Index: " + i + "; Chunk: " + chunk);
-                            if (world.chunks.ContainsKey(chunk)) {
-                                world.chunks[chunk].voxels[i] = (int)v.w;
+                        }
+                    } else if (voxels[index] == -2) {
+                        // SPRUCE TREE
+                        treeVoxels.Add(new Quaternion(x, y, z, 6));
+                        treeVoxels.Add(new Quaternion(x, y + 1, z, 6));
+                        int height = Mathf.RoundToInt(random * 14 * resolution);
+                        int radius = (int)(height / 3.5f);
+                        float rad = radius;
+                        for (int h = 2; h < height - 1; ++h) {
+                            for (int i = -radius; i <= radius; ++i) {
+                            for (int j = -radius; j <= radius; ++j) {
+                                if (Mathf.Sqrt(i*i + j*j) < rad) {
+                                    treeVoxels.Add(new Quaternion(x + i, y + h, z + j, 7));
+                                }
                             }
+                            }
+                            rad -= radius * 0.08f;
+                        }
+                        treeVoxels.Add(new Quaternion(x, y + height - 1, z, 7));
+                        treeVoxels.Add(new Quaternion(x, y + height, z, 7));
+                    } else if (voxels[index] == -3) {
+                        // VINE
+                        int height = Mathf.RoundToInt(randomFR * 6 * resolution);
+                        for (int h = 0; h < height; ++h) {
+                            treeVoxels.Add(new Quaternion(x, y - h, z, 2));
                         }
                     }
-                    }
+                    // Fill voxel arrays
+                    for (int vi = 0; vi < treeVoxels.Count; ++vi) {
+                        Quaternion v = treeVoxels[vi];
+                        int xx = (int)v.x;
+                        int yy = (int)v.y;
+                        int zz = (int)v.z;
+                        for (int a = -1; a <= 1; ++a) {
+                        for (int b = -1; b <= 1; ++b) {
+                        for (int c = -1; c <= 1; ++c) {
+                            int xxx = xx - (chunkWidth * a);
+                            int yyy = yy - (chunkWidth * b);
+                            int zzz = zz - (chunkWidth * c);
+                            if (xxx >= 0 && xxx < padded && yyy >= 0 && yyy < padded && zzz >= 0 && zzz < padded) {
+                                int i = padded * padded * zzz + padded * yyy + xxx;
+                                Vector3Int chunk = coordinates + new Vector3Int(a, b, c);
+                                // Debug.Log("Index: " + i + "; Chunk: " + chunk);
+                                if (world.chunks.ContainsKey(chunk)) {
+                                    world.chunks[chunk].voxels[i] = (int)v.w;
+                                }
+                            }
+                        }
+                        }
+                        }
                     }
                 }
             }
-        }
-        }
-        }
+            }
+            }
         pass = 2;
+        });
     }
     
     //Checks the passes of the eight surrounding chunks

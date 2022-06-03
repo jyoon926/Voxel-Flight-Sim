@@ -51,8 +51,8 @@ Material:
     - Clouds_Edge: 0.75
     - Clouds_Fractal_Amplitude: 0.7
     - Clouds_Fractal_Frequency: 1.5
-    - Clouds_Octaves: 8
-    - Clouds_Opacity: 1
+    - Clouds_Octaves: 1
+    - Clouds_Opacity: 0
     - Clouds_Scale: 0.5
     - Clouds_Speed: 0.03
     - Power: 5
